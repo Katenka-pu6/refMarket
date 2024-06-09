@@ -1,5 +1,5 @@
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.LinkedList;
 
 interface QueueBehaviour {
     void enqueue(String person);
@@ -22,14 +22,26 @@ class SimpleMessagePrinter implements MessagePrinter {
     }
 }
 
+class MarketStatusUpdater implements marketUpdater {
+    @Override
+    public void update() {
+        System.out.println("Market status updated.");
+    }
+}
+
 public class market implements QueueBehaviour, MarketBehaviour {
     private Queue<String> queue = new LinkedList<>();
+    private MessagePrinter messagePrinter;
+
+    public market(MessagePrinter messagePrinter) {
+        this.messagePrinter = messagePrinter;
+    }
 
     @Override
     public void enqueue(String person) {
         queue.add(person);
     }
- 
+
     @Override
     public String dequeue() {
         return queue.poll();
@@ -38,27 +50,24 @@ public class market implements QueueBehaviour, MarketBehaviour {
     @Override
     public void addPersonToQueue(String person) {
         queue.add(person);
-        System.out.println(person + " added to the queue.");
+        messagePrinter.printMessage(person + " added to the queue.");
     }
 
     @Override
     public String servePerson() {
         if (!queue.isEmpty()) {
             String person = queue.poll();
-            System.out.println(person + " served.");
+            messagePrinter.printMessage(person + " served.");
             return person;
         } else {
-            System.out.println("No one in the queue.");
+            messagePrinter.printMessage("No one in the queue.");
             return null;
         }
     }
 
-    public void update() {
-        System.out.println("Market status updated.");
-    }
-
     public static void main(String[] args) {
-        market market = new market();
+        MessagePrinter messagePrinter = new SimpleMessagePrinter();
+        market market = new market(messagePrinter);
 
         market.addPersonToQueue("Alice");
         market.addPersonToQueue("Bob");
@@ -66,6 +75,7 @@ public class market implements QueueBehaviour, MarketBehaviour {
         market.servePerson();
         market.servePerson();
 
-        market.update();
+        marketUpdater marketUpdater = new MarketStatusUpdater();
+        marketUpdater.update();
     }
-} 
+}
