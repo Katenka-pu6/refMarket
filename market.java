@@ -11,6 +11,17 @@ interface MarketBehaviour {
     String servePerson();
 }
 
+interface MessagePrinter {
+    void printMessage(String message);
+}
+
+class SimpleMessagePrinter implements MessagePrinter {
+    @Override
+    public void printMessage(String message) {
+        System.out.println(message);
+    }
+}
+
 public class market implements QueueBehaviour, MarketBehaviour {
     private Queue<String> queue = new LinkedList<>();
 
